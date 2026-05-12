@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JH Obklady | Profesionální obklady a rekonstrukce koupelen</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;500;600;700;800&family=Open+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --charcoal: #2C2C2C;
+            --brown: #8B7355;
+            --taupe: #A89F91;
+            --beige: #D4CFC7;
+            --light: #F0EDE8;
+            --white: #FFFFFF;
+            --cream: #FAF8F5;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--cream);
+            color: var(--charcoal);
+            overflow-x: hidden;
+            cursor: none;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Custom Cursor */
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--brown);
+        }
+        
+        .cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 1px solid var(--brown);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+        
+        body:hover .cursor-outline.hovered {
+            width: 80px;
+            height: 80px;
+            background-color: rgba(139, 115, 85, 0.1);
+            border-color: transparent;
+            mix-blend-mode: difference;
+        }
+
+        /* Grain Overlay */
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9998;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--cream);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--brown);
+            border-radius: 3px;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+        }
+
+        .hero-bg-image {
+            position: absolute;
+            inset: 0;
+            background-image: url('https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.4;
+            filter: grayscale(30%) contrast(1.2);
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(44,44,44,0.9));
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 10vw, 8rem);
+            line-height: 0.9;
+            letter-spacing: -0.03em;
+            color: white;
+        }
+
+        .hero-title span {
+            display: block;
+            font-style: italic;
+            color: var(--beige);
+        }
+
+        .hero-subtitle {
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 300;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--taupe);
+        }
+
+        /* Magnetic Button */
+        .magnetic-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 48px;
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
+            font-size: 14px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .magnetic-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--brown);
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: -1;
+        }
+
+        .magnetic-btn:hover::before {
+            transform: translateY(0);
+        }
+
+        .magnetic-btn:hover {
+            border-color: var(--brown);
+        }
+
+        /* Section Styles */
+        .section-label {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            font-size: 11px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--brown);
+        }
+
+        .section-title {
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
+            line-height: 1.15;
+            color: var(--charcoal);
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        /* Service Cards */
+        .service-card {
+            position: relative;
+            background: white;
+            padding: 36px;
+            border-radius: 12px;
+            border: 1px solid rgba(139, 115, 85, 0.1);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--brown);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .service-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(139, 115, 85, 0.02) 0%, transparent 100%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .service-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .service-card:hover::after {
+            opacity: 1;
+        }
+
+        .service-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 40px 80px -20px rgba(44, 44, 44, 0.15);
+            border-color: rgba(139, 115, 85, 0.2);
+        }
+
+        .service-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 48px;
+            line-height: 1;
+            color: var(--brown);
+            opacity: 0.15;
+            position: absolute;
+            top: 20px;
+            right: 24px;
+        }
+        
+        .service-card:hover .service-number {
+            opacity: 0.3;
+        }
+
+        /* Process Timeline */
+        .process-item {
+            position: relative;
+            padding-left: 80px;
+        }
+
+        .process-number {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 56px;
+            height: 56px;
+            border: 2px solid var(--brown);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            color: var(--brown);
+            background: var(--cream);
+            transition: all 0.3s ease;
+        }
+
+        .process-item:hover .process-number {
+            background: var(--brown);
+            color: white;
+        }
+
+        .process-line-vertical {
+            position: absolute;
+            left: 27px;
+            top: 70px;
+            width: 2px;
+            height: calc(100% - 40px);
+            background: linear-gradient(to bottom, var(--brown), transparent);
+            opacity: 0.3;
+        }
+
+        /* Gallery */
+        .gallery-section {
+            position: relative;
+            height: 100vh;
+            overflow: hidden;
+            background: var(--charcoal);
+        }
+
+        .gallery-track {
+            display: flex;
+            gap: 40px;
+            padding: 0 10vw;
+            height: 100%;
+            align-items: center;
+            will-change: transform;
+        }
+
+        .gallery-item {
+            flex-shrink: 0;
+            width: 520px;
+            height: 70vh;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px -20px rgba(0,0,0,0.3);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.08);
+        }
+
+        .gallery-item-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 48px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.4));
+            transform: translateY(100%);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .gallery-item:hover .gallery-item-info {
+            transform: translateY(0);
+        }
+
+        /* Testimonials */
+        .testimonial-card {
+            background: white;
+            padding: 64px;
+            position: relative;
+        }
+
+        .testimonial-card::before {
+            content: '"';
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            font-family: 'Playfair Display', serif;
+            font-size: 120px;
+            line-height: 1;
+            color: rgba(139, 115, 85, 0.1);
+        }
+
+        /* Contact Form */
+        .form-group {
+            position: relative;
+            margin-bottom: 32px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 0;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(0,0,0,0.2);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            color: var(--charcoal);
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            border-bottom-color: var(--brown);
+        }
+
+        .form-label {
+            position: absolute;
+            left: 0;
+            top: 16px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            color: rgba(0,0,0,0.5);
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus + .form-label,
+        .form-input:not(:placeholder-shown) + .form-label {
+            top: -8px;
+            font-size: 11px;
+            color: var(--brown);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        /* Navigation */
+        .nav-main {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 24px 48px;
+            transition: all 0.4s ease;
+        }
+
+        .nav-main.scrolled {
+            background: rgba(250, 248, 245, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 16px 48px;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+        }
+
+        .nav-main.scrolled .nav-logo,
+        .nav-main.scrolled .nav-link {
+            color: var(--charcoal);
+        }
+
+        .nav-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+            letter-spacing: -0.02em;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.8);
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--brown);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .nav-link:hover {
+            color: white;
+        }
+
+        .nav-main.scrolled .nav-link:hover {
+            color: var(--brown);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+            .nav-links {
+                display: none;
+            }
+        }
+
+        /* Parallax Image */
+        .parallax-image {
+            will-change: transform;
+        }
+
+        /* Text Reveal Animation */
+        .text-reveal {
+            overflow: hidden;
+        }
+
+        .text-reveal-inner {
+            display: block;
+            transform: translateY(100%);
+        }
+
+        /* Smooth Image Reveal */
+        .image-reveal {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .image-reveal::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: var(--cream);
+            transform: translateX(0);
+            transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .image-reveal.revealed::after {
+            transform: translateX(100%);
+        }
+
+        /* Footer */
+        .footer-section {
+            background: var(--charcoal);
+            color: white;
+            padding: 80px 0 40px;
+        }
+
+        .footer-link {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--beige);
+        }
+
+        /* Hide scrollbar for gallery */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Custom Cursor -->
+    <div class="cursor-dot"></div>
+    <div class="cursor-outline"></div>
+
+    <!-- Grain Overlay -->
+    <div class="grain-overlay"></div>
+
+    <!-- Navigation -->
+    <nav class="nav-main" id="navbar">
+        <div class="flex justify-between items-center">
+            <a href="#" class="nav-logo hover-trigger">JH OBKLADY</a>
+            <div class="nav-links flex items-center gap-10">
+                <a href="#about" class="nav-link hover-trigger">O nás</a>
+                <a href="#services" class="nav-link hover-trigger">Služby</a>
+                <a href="#process" class="nav-link hover-trigger">Proces</a>
+                <a href="#gallery" class="nav-link hover-trigger">Realizace</a>
+                <a href="#contact" class="nav-link hover-trigger">Kontakt</a>
+            </div>
+            <button class="mobile-menu-btn text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-bg-image"></div>
+        <div class="hero-overlay"></div>
+        
+        <div class="hero-content w-full px-8 lg:px-16">
+            <div class="max-w-7xl mx-auto">
+                <div class="grid lg:grid-cols-2 gap-16 items-end">
+                    <div>
+                        <p class="hero-subtitle mb-6 opacity-0" id="hero-subtitle">Profesionální řemeslník — Plzeň & okolí</p>
+                        <h1 class="hero-title mb-8">
+                            <span class="block overflow-hidden">
+                                <span class="block hero-line">JH</span>
+                            </span>
+                            <span class="block overflow-hidden">
+                                <span class="block hero-line italic text-[#C4BDB5]">OBKLADY</span>
+                            </span>
+                        </h1>
+                        <p class="text-white/60 text-lg max-w-md mb-10 font-light leading-relaxed opacity-0" id="hero-desc">
+                            Kompletní rekonstrukce koupelen a bytů. Precizní pokládka obkladů a dlažeb s důrazem na detail.
+                        </p>
+                        <div class="flex gap-6 opacity-0" id="hero-cta">
+                            <a href="#gallery" class="magnetic-btn hover-trigger">
+                                <span>Prohlédnout realizace</span>
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="hidden lg:block">
+                        <div class="relative">
+                            <div class="absolute -top-20 -right-20 w-64 h-64 border border-white/10 rounded-full"></div>
+                            <div class="absolute -bottom-10 -left-10 w-40 h-40 border border-white/10 rounded-full"></div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="image-reveal rounded-lg overflow-hidden h-64">
+                                    <img src="https://scontent.ffez2-2.fna.fbcdn.net/v/t39.30808-6/509396102_1276759407185383_2856940171093695290_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=110&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeFp0nwGAj7zbEfJnmXk-1qQuVSECK7GIwu5VIQIrsYjCyWpb8xMKipgsTm-YCPNG-4XyrFM3b1nAnLQsqXCXfqy&_nc_ohc=20h2a2Y3Zs8Q7kNvwGdBm9g&_nc_oc=AdqUuH5YaxTYC9ON6zmtYemguvEx-R5vJQVBosfnj3VAS5bGusDbBhnWoT8MOwcTVlM&_nc_zt=23&_nc_ht=scontent.ffez2-2.fna&_nc_gid=dsP6llnyY6csswKGm9tryg&_nc_ss=7b2a8&oh=00_Af6czJNs5gLVE04zhBTgaZj2NGhCIHzsG5qtoGqWZLOJ0w&oe=6A090105" alt="" class="w-full h-full object-cover">
+                                </div>
+                                <div class="image-reveal rounded-lg overflow-hidden h-64 mt-12">
+                                    <img src="https://scontent.ffez1-2.fna.fbcdn.net/v/t39.30808-6/476352013_3160376944101380_2716646871979551330_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeGumK0ilOhxHXUs4r1DsZpG0lWIo8RiKajSVYijxGIpqAYs_j3VEjmVRAtIjdROx1JYzsnwM2p7lB0QpA-kbFNc&_nc_ohc=gAlvJEvZ4u4Q7kNvwFb5EoE&_nc_oc=AdqZ4cOw5EEM5qCS15SXvtjWlYFPhRN5QHyXMBXywTrwl9dmHXAxOdy9fDmOK9M3SNc&_nc_zt=23&_nc_ht=scontent.ffez1-2.fna&_nc_gid=xoQxNYIPG51L35Za8LWesA&_nc_ss=7b2a8&oh=00_Af7l7apv7c1RvCUzZDuHXFnQzU5qjBJ5jKnboQjShnQwmA&oe=6A092922" alt="" class="w-full h-full object-cover">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 opacity-0" id="scroll-indicator">
+            <span class="text-white/40 text-xs tracking-widest uppercase">Scroll</span>
+            <div class="w-px h-12 bg-gradient-to-b from-white/40 to-transparent"></div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-32 px-8 lg:px-16 bg-[#FAF8F5]">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-12 gap-16 items-center">
+                <div class="lg:col-span-5">
+                    <div class="relative">
+                        <div class="image-reveal rounded-2xl overflow-hidden">
+                            <img src="https://scontent.ffez1-2.fna.fbcdn.net/v/t39.30808-6/476352013_3160376944101380_2716646871979551330_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeGumK0ilOhxHXUs4r1DsZpG0lWIo8RiKajSVYijxGIpqAYs_j3VEjmVRAtIjdROx1JYzsnwM2p7lB0QpA-kbFNc&_nc_ohc=gAlvJEvZ4u4Q7kNvwFb5EoE&_nc_oc=AdqZ4cOw5EEM5qCS15SXvtjWlYFPhRN5QHyXMBXywTrwl9dmHXAxOdy9fDmOK9M3SNc&_nc_zt=23&_nc_ht=scontent.ffez1-2.fna&_nc_gid=xoQxNYIPG51L35Za8LWesA&_nc_ss=7b2a8&oh=00_Af7l7apv7c1RvCUzZDuHXFnQzU5qjBJ5jKnboQjShnQwmA&oe=6A092922" alt="Řemeslník při práci" class="w-full h-[600px] object-cover parallax-image">
+                        </div>
+                        <div class="absolute -bottom-8 -right-8 bg-white p-8 rounded-xl shadow-2xl">
+                            <div class="text-5xl font-bold text-[#8B7355] font-['Playfair_Display']">15+</div>
+                            <div class="text-sm text-[#2C2C2C]/60 mt-1 uppercase tracking-wider font-medium">let zkušeností</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-6 lg:col-start-7">
+                    <span class="section-label mb-4 block">O firmě</span>
+                    <h2 class="section-title mb-8">Řemeslo, kterému<br><em class="text-[#8B7355]">rozumíme</em></h2>
+                    
+                    <div class="space-y-6 text-[#2C2C2C]/70 leading-relaxed font-light text-lg">
+                        <p>Jsem řemeslník, nejenom pokládač. Specializuji se na montáž obkladů a dlažeb, kompletní rekonstrukce bytů a koupelen včetně zednických prací.</p>
+                        <p>Moje silná stránka je univerzálnost a zkušenosti – zvládnu celý proces rekonstrukce od bourání po finální úklid.</p>
+                        <p>Zakládám si na přesnosti pokládky, rovnosti ploch, čistotě detailů (rohy, spáry, přechody) a celkovém vizuálním dojmu.</p>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-8 mt-12 pt-8 border-t border-[#2C2C2C]/10">
+                        <div>
+                            <div class="text-3xl font-bold text-[#8B7355] font-['Playfair_Display']">200+</div>
+                            <div class="text-xs text-[#2C2C2C]/50 uppercase tracking-wider mt-1">Realizací</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold text-[#8B7355] font-['Playfair_Display']">100%</div>
+                            <div class="text-xs text-[#2C2C2C]/50 uppercase tracking-wider mt-1">Doporučení</div>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-bold text-[#8B7355] font-['Playfair_Display']">50km</div>
+                            <div class="text-xs text-[#2C2C2C]/50 uppercase tracking-wider mt-1">Dosah</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-48 px-8 lg:px-16 bg-gradient-to-b from-white via-[#F9F7F4] to-white relative overflow-hidden">
+        <!-- Background Decoration -->
+        <div class="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-[#8B7355]/5 to-transparent rounded-full blur-3xl -z-10"></div>
+        <div class="absolute bottom-0 left-0 w-72 h-72 bg-gradient-to-tr from-[#A89F91]/5 to-transparent rounded-full blur-3xl -z-10"></div>
+
+        <div class="max-w-7xl mx-auto">
+            <!-- Section Header -->
+            <div class="text-center mb-32">
+                <div class="inline-block mb-6">
+                    <span class="section-label px-4 py-2 bg-[#8B7355]/10 rounded-full">Naše specializace</span>
+                </div>
+                <h2 class="section-title text-5xl md:text-6xl mb-6">Služby</h2>
+                <p class="text-[#2C2C2C]/60 text-xl max-w-3xl mx-auto leading-relaxed">
+                    Nabízíme kompletní řešení od první konzultace až po finální úklid. Každá služba je realizována s maximální péčí a profesionalitou.
+                </p>
+            </div>
+
+            <!-- Services Grid -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+                <!-- Service 1 -->
+                <div class="service-card group relative bg-white rounded-2xl p-8 transition-all duration-500 hover-trigger">
+                    <div class="absolute inset-0 bg-gradient-to-br from-[#8B7355]/2 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 mb-8 flex items-center justify-center rounded-2xl bg-gradient-to-br from-[#8B7355] to-[#A89F91] shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-500">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+                        </div>
+                        
+                        <div class="mb-6 flex items-center gap-3">
+                            <span class="text-4xl font-bold text-[#8B7355]/15">01</span>
+                            <span class="text-xs font-bold text-[#8B7355] bg-[#8B7355]/10 px-3 py-1 rounded-full">SPECIALITA</span>
+                        </div>
+                        
+                        <h3 class="text-2xl font-bold text-[#2C2C2C] mb-4 group-hover:text-[#8B7355] transition-colors">Obklady a dlažby</h3>
+                        <p class="text-[#2C2C2C]/70 leading-relaxed mb-6">Profesionální pokládka všech typů obkladů a dlažeb. Precizní zpracování detailů, rohů a spár se zaměřením na dokonalý výsledek.</p>
+                        
+                        <div class="flex items-center gap-2 text-[#8B7355] font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <span>Zjistit více</span>
+                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service 2 -->
+                <div class="service-card group relative bg-white rounded-2xl p-8 transition-all duration-500 hover-trigger">
+                    <div class="absolute inset-0 bg-gradient-to-br from-[#8B7355]/2 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 mb-8 flex items-center justify-center rounded-2xl bg-gradient-to-br from-[#8B7355] to-[#A89F91] shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-500">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        </div>
+                        
+                        <div class="mb-6 flex items-center gap-3">
+                            <span class="text-4xl font-bold text-[#8B7355]/15">02</span>
+                            <span class="text-xs font-bold text-[#8B7355] bg-[#8B7355]/10 px-3 py-1 rounded-full">KOMPLEXNÍ</span>
+                        </div>
+                        
+                        <h3 class="text-2xl font-bold text-[#2C2C2C] mb-4 group-hover:text-[#8B7355] transition-colors">Rekonstrukce koupelen</h3>
+                        <p class="text-[#2C2C2C]/70 leading-relaxed mb-6">Kompletní rekonstrukce koupelen na klíč. Zajišťujeme přípravy podkladů, instalace, obklady a finální detaily s maximální péčí.</p>
+                        
+                        <div class="flex items-center gap-2 text-[#8B7355] font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <span>Zjistit více</span>
+                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service 3 -->
+                <div class="service-card group relative bg-white rounded-2xl p-8 transition-all duration-500 hover-trigger">
+                    <div class="absolute inset-0 bg-gradient-to-br from-[#8B7355]/2 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 mb-8 flex items-center justify-center rounded-2xl bg-gradient-to-br from-[#8B7355] to-[#A89F91] shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-500">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        </div>
+                        
+                        <div class="mb-6 flex items-center gap-3">
+                            <span class="text-4xl font-bold text-[#8B7355]/15">03</span>
+                            <span class="text-xs font-bold text-[#8B7355] bg-[#8B7355]/10 px-3 py-1 rounded-full">EXPERTISE</span>
+                        </div>
+                        
+                        <h3 class="text-2xl font-bold text-[#2C2C2C] mb-4 group-hover:text-[#8B7355] transition-colors">Bytová jádra</h3>
+                        <p class="text-[#2C2C2C]/70 leading-relaxed mb-6">Specialista na rekonstrukce bytových jader v panelových i cihlových domech. Zkušenosti s nejsložitějšími projekty.</p>
+                        
+                        <div class="flex items-center gap-2 text-[#8B7355] font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <span>Zjistit více</span>
+                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service 4 -->
+                <div class="service-card group relative bg-white rounded-2xl p-8 transition-all duration-500 hover-trigger">
+                    <div class="absolute inset-0 bg-gradient-to-br from-[#8B7355]/2 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 mb-8 flex items-center justify-center rounded-2xl bg-gradient-to-br from-[#8B7355] to-[#A89F91] shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-500">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
+                        </div>
+                        
+                        <div class="mb-6 flex items-center gap-3">
+                            <span class="text-4xl font-bold text-[#8B7355]/15">04</span>
+                            <span class="text-xs font-bold text-[#8B7355] bg-[#8B7355]/10 px-3 py-1 rounded-full">PROFESIONÁL</span>
+                        </div>
+                        
+                        <h3 class="text-2xl font-bold text-[#2C2C2C] mb-4 group-hover:text-[#8B7355] transition-colors">Zednické práce</h3>
+                        <p class="text-[#2C2C2C]/70 leading-relaxed mb-6">Příprava podkladů, bourací práce, omítky a zdění. Kompletní zednický servis s dlouholetou praxí a kvalitou.</p>
+                        
+                        <div class="flex items-center gap-2 text-[#8B7355] font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <span>Zjistit více</span>
+                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service 5 -->
+                <div class="service-card group relative bg-white rounded-2xl p-8 transition-all duration-500 hover-trigger">
+                    <div class="absolute inset-0 bg-gradient-to-br from-[#8B7355]/2 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 mb-8 flex items-center justify-center rounded-2xl bg-gradient-to-br from-[#8B7355] to-[#A89F91] shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-500">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        </div>
+                        
+                        <div class="mb-6 flex items-center gap-3">
+                            <span class="text-4xl font-bold text-[#8B7355]/15">05</span>
+                            <span class="text-xs font-bold text-[#8B7355] bg-[#8B7355]/10 px-3 py-1 rounded-full">SPOLEHLIVOST</span>
+                        </div>
+                        
+                        <h3 class="text-2xl font-bold text-[#2C2C2C] mb-4 group-hover:text-[#8B7355] transition-colors">Pomocné práce</h3>
+                        <p class="text-[#2C2C2C]/70 leading-relaxed mb-6">Asistence při stavebních a rekonstrukčních pracích. Flexpibilita, spolehlivost a profesionální přístup v každé situaci.</p>
+                        
+                        <div class="flex items-center gap-2 text-[#8B7355] font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <span>Zjistit více</span>
+                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service 6 -->
+                <div class="service-card group relative bg-white rounded-2xl p-8 transition-all duration-500 hover-trigger">
+                    <div class="absolute inset-0 bg-gradient-to-br from-[#8B7355]/2 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <div class="relative z-10">
+                        <div class="w-16 h-16 mb-8 flex items-center justify-center rounded-2xl bg-gradient-to-br from-[#8B7355] to-[#A89F91] shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-500">
+                            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                        </div>
+                        
+                        <div class="mb-6 flex items-center gap-3">
+                            <span class="text-4xl font-bold text-[#8B7355]/15">06</span>
+                            <span class="text-xs font-bold text-[#8B7355] bg-[#8B7355]/10 px-3 py-1 rounded-full">PORADENSTVÍ</span>
+                        </div>
+                        
+                        <h3 class="text-2xl font-bold text-[#2C2C2C] mb-4 group-hover:text-[#8B7355] transition-colors">Poradenství</h3>
+                        <p class="text-[#2C2C2C]/70 leading-relaxed mb-6">Pomoc s výběrem materiálů, dispozičními řešeními a optimalizací rozpočtu. Odborné konzultace bez skrytých nákladů.</p>
+                        
+                        <div class="flex items-center gap-2 text-[#8B7355] font-semibold opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <span>Zjistit více</span>
+                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="mt-24 pt-24 border-t border-[#2C2C2C]/10 text-center">
+                <p class="text-[#2C2C2C]/60 mb-8 text-lg">Hledáte specifické řešení?</p>
+                <a href="#contact" class="inline-flex items-center gap-3 px-8 py-4 bg-[#8B7355] text-white font-semibold rounded-xl hover:bg-[#2C2C2C] transition-all duration-300 group hover-trigger shadow-lg hover:shadow-xl">
+                    <span>Konzultace na míru</span>
+                    <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Process Section -->
+    <section id="process" class="py-32 px-8 lg:px-16 bg-[#FAF8F5]">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-24">
+                <span class="section-label mb-4 block">Jak to funguje</span>
+                <h2 class="section-title">Náš proces</h2>
+            </div>
+
+            <div class="relative space-y-16">
+                <div class="process-line-vertical"></div>
+
+                <div class="process-item hover-trigger">
+                    <div class="process-number">1</div>
+                    <h3 class="text-2xl font-semibold text-[#2C2C2C] mb-3">Konzultace a zaměření</h3>
+                    <p class="text-[#2C2C2C]/60 leading-relaxed max-w-lg">Kontaktujte nás telefonicky nebo emailem. Přijedeme, prohlédneme prostor a diskutujeme vaši představu. Podrobná analýza stavu a přesné měření.</p>
+                </div>
+
+                <div class="process-item hover-trigger">
+                    <div class="process-number">2</div>
+                    <h3 class="text-2xl font-semibold text-[#2C2C2C] mb-3">Cenová nabídka</h3>
+                    <p class="text-[#2C2C2C]/60 leading-relaxed max-w-lg">Transparentní rozpočet bez skrytých nákladů. Jasné termíny a rozsah prací. Žádná nepříjemná překvapení.</p>
+                </div>
+
+                <div class="process-item hover-trigger">
+                    <div class="process-number">3</div>
+                    <h3 class="text-2xl font-semibold text-[#2C2C2C] mb-3">Realizace</h3>
+                    <p class="text-[#2C2C2C]/60 leading-relaxed max-w-lg">Profesionální provedení s denními aktualizacemi. Čistota a respekt k vašemu domovu. Problémy řešíme operativně.</p>
+                </div>
+
+                <div class="process-item hover-trigger">
+                    <div class="process-number">4</div>
+                    <h3 class="text-2xl font-semibold text-[#2C2C2C] mb-3">Předání a záruka</h3>
+                    <p class="text-[#2C2C2C]/60 leading-relaxed max-w-lg">Kontrola kvality, úklid, předání dokumentace. 24 měsíců záruka na veškeré práce.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery-section">
+        <div class="absolute top-10 left-8 lg:left-16 z-10">
+            <span class="section-label text-[#8B7355] mb-4 block">Portfolio</span>
+            <h2 class="text-4xl md:text-6xl font-bold text-white font-['Playfair_Display']">Realizace</h2>
+        </div>
+
+        <div class="gallery-track hide-scrollbar" id="galleryTrack">
+            <div class="gallery-item hover-trigger">
+                <img src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=800&q=80" alt="Moderní koupelna se šedými obklady">
+                <div class="gallery-item-info">
+                    <h4 class="text-white text-2xl font-semibold font-['Playfair_Display']">Moderní koupelna</h4>
+                    <p class="text-white/60 text-sm mt-1">Plzeň, 2023</p>
+                </div>
+            </div>
+            <div class="gallery-item hover-trigger">
+                <img src="https://images.unsplash.com/photo-1595428774223-ef52624120d2?auto=format&fit=crop&w=800&q=80" alt="Dlažba s moderním designem">
+                <div class="gallery-item-info">
+                    <h4 class="text-white text-2xl font-semibold font-['Playfair_Display']">Obklad ze přírodního kamene</h4>
+                    <p class="text-white/60 text-sm mt-1">Plzeň-sever, 2023</p>
+                </div>
+            </div>
+            <div class="gallery-item hover-trigger">
+                <img src="https://images.unsplash.com/photo-1584622050111-993a426fbf0a?auto=format&fit=crop&w=800&q=80" alt="Kuchyňský obklad v teple">
+                <div class="gallery-item-info">
+                    <h4 class="text-white text-2xl font-semibold font-['Playfair_Display']">Kuchyňský obklad</h4>
+                    <p class="text-white/60 text-sm mt-1">Plzeň, 2022</p>
+                </div>
+            </div>
+            <div class="gallery-item hover-trigger">
+                <img src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=800&q=80" alt="Rekonstrukce koupelny">
+                <div class="gallery-item-info">
+                    <h4 class="text-white text-2xl font-semibold font-['Playfair_Display']">Luxusní koupelna</h4>
+                    <p class="text-white/60 text-sm mt-1">Plzeň, 2023</p>
+                </div>
+            </div>
+            <div class="gallery-item hover-trigger">
+                <img src="https://images.unsplash.com/photo-1604014237800-1c9102c219b0?auto=format&fit=crop&w=800&q=80" alt="Bytové jádro s novými obklady">
+                <div class="gallery-item-info">
+                    <h4 class="text-white text-2xl font-semibold font-['Playfair_Display']">Bytové jádro</h4>
+                    <p class="text-white/60 text-sm mt-1">Plzeň, 2022</p>
+                </div>
+            </div>
+            <div class="gallery-item hover-trigger">
+                <img src="https://images.unsplash.com/photo-1631889992804-81c2c9bd4f75?auto=format&fit=crop&w=800&q=80" alt="Kompletní rekonstrukce bytu">
+                <div class="gallery-item-info">
+                    <h4 class="text-white text-2xl font-semibold font-['Playfair_Display']">Kompletní rekonstrukce</h4>
+                    <p class="text-white/60 text-sm mt-1">Plzeň-jih, 2023</p>
+                </div>
+            </div>
+            <div class="gallery-item hover-trigger">
+                <img src="https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=800&q=80" alt="Designová koupelna">
+                <div class="gallery-item-info">
+                    <h4 class="text-white text-2xl font-semibold font-['Playfair_Display']">Designová koupelna</h4>
+                    <p class="text-white/60 text-sm mt-1">Plzeň, 2024</p>
+                </div>
+            </div>
+            <div class="gallery-item hover-trigger">
+                <img src="https://images.unsplash.com/photo-1564540586988-aa5272d6299c?auto=format&fit=crop&w=800&q=80" alt="Moderní dlažba">
+                <div class="gallery-item-info">
+                    <h4 class="text-white text-2xl font-semibold font-['Playfair_Display']">Moderní dlažba</h4>
+                    <p class="text-white/60 text-sm mt-1">Plzeň-západ, 2024</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="py-32 px-8 lg:px-16 bg-[#FAF8F5]">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-20">
+                <span class="section-label mb-4 block">Spokojení klienti</span>
+                <h2 class="section-title">Reference</h2>
+            </div>
+
+            <div class="relative" id="testimonialSlider">
+                <div class="testimonial-card rounded-2xl shadow-xl">
+                    <div class="testimonial-slide active">
+                        <div class="flex gap-1 mb-8 text-[#8B7355]">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        </div>
+                        <p class="text-2xl text-[#2C2C2C] italic leading-relaxed mb-8 font-['Playfair_Display']">"Pan Hájek odvedl perfektní práci. Komunikace byla bezproblémová, termín dodržen a výsledek přesně odpovídá našim představám. Koupelnu používáme 2 roky a vypadá stále jako nová."</p>
+                        <div>
+                            <div class="font-semibold text-[#2C2C2C]">Rodina Nováková</div>
+                            <div class="text-sm text-[#8B7355]">Plzeň — Rekonstrukce koupelny</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center gap-3 mt-8">
+                    <button class="testimonial-dot w-3 h-3 rounded-full bg-[#8B7355] transition-all hover-trigger" data-index="0"></button>
+                    <button class="testimonial-dot w-3 h-3 rounded-full bg-[#2C2C2C]/20 transition-all hover-trigger" data-index="1"></button>
+                    <button class="testimonial-dot w-3 h-3 rounded-full bg-[#2C2C2C]/20 transition-all hover-trigger" data-index="2"></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-40 px-8 lg:px-16 bg-gradient-to-b from-white to-[#F9F7F4]">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-24">
+                <div>
+                    <span class="section-label mb-4 block">Kontakt</span>
+                    <h2 class="section-title mb-8">Pojďme to<br><em class="text-[#8B7355]">řešit</em></h2>
+                    <p class="text-[#2C2C2C]/60 text-lg mb-12 leading-relaxed">Zavolejte nebo napište. Rád vám poradím a domluvíme se na nezávazné konzultaci přímo u vás.</p>
+
+                    <div class="space-y-8">
+                        <div class="flex items-center gap-6">
+                            <div class="w-14 h-14 border border-[#2C2C2C]/10 rounded-full flex items-center justify-center text-[#8B7355]">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                            </div>
+                            <div>
+                                <div class="text-xs text-[#2C2C2C]/50 uppercase tracking-wider mb-1">Telefon</div>
+                                <a href="tel:+420606853760" class="text-lg text-[#2C2C2C] hover:text-[#8B7355] transition-colors">+420 606 853 760</a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-6">
+                            <div class="w-14 h-14 border border-[#2C2C2C]/10 rounded-full flex items-center justify-center text-[#8B7355]">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            </div>
+                            <div>
+                                <div class="text-xs text-[#2C2C2C]/50 uppercase tracking-wider mb-1">Email</div>
+                                <a href="mailto:info@jhobklady.cz" class="text-lg text-[#2C2C2C] hover:text-[#8B7355] transition-colors">info@jhobklady.cz</a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-6">
+                            <div class="w-14 h-14 border border-[#2C2C2C]/10 rounded-full flex items-center justify-center text-[#8B7355]">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            </div>
+                            <div>
+                                <div class="text-xs text-[#2C2C2C]/50 uppercase tracking-wider mb-1">Lokalita</div>
+                                <span class="text-lg text-[#2C2C2C]">Plzeň a okolí (50 km)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <form class="space-y-8">
+                        <div class="form-group">
+                            <input type="text" class="form-input" placeholder=" " required>
+                            <label class="form-label">Jméno a příjmení</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="email" class="form-input" placeholder=" " required>
+                            <label class="form-label">Email</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="tel" class="form-input" placeholder=" ">
+                            <label class="form-label">Telefon</label>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-input resize-none" rows="4" placeholder=" "></textarea>
+                            <label class="form-label">Popis zakázky</label>
+                        </div>
+                        <button type="submit" class="magnetic-btn bg-[#2C2C2C] text-white border-none hover-trigger w-full justify-center">
+                            <span>Odeslat poptávku</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer-section">
+        <div class="max-w-7xl mx-auto px-8 lg:px-16">
+            <div class="grid md:grid-cols-4 gap-12 mb-16">
+                <div class="md:col-span-2">
+                    <div class="text-3xl font-bold text-white font-['Playfair_Display'] mb-4">JH OBKLADY</div>
+                    <p class="text-white/50 max-w-sm leading-relaxed">Profesionální obklady, dlažby a rekonstrukce koupelen v Plzni a okolí. Kvalita a spolehlivost od roku 2010.</p>
+                </div>
+                <div>
+                    <div class="text-white font-semibold mb-4 uppercase tracking-wider text-xs">Menu</div>
+                    <div class="space-y-3">
+                        <a href="#about" class="footer-link block hover-trigger">O nás</a>
+                        <a href="#services" class="footer-link block hover-trigger">Služby</a>
+                        <a href="#process" class="footer-link block hover-trigger">Proces</a>
+                        <a href="#gallery" class="footer-link block hover-trigger">Realizace</a>
+                    </div>
+                </div>
+                <div>
+                    <div class="text-white font-semibold mb-4 uppercase tracking-wider text-xs">Kontakt</div>
+                    <div class="space-y-3 text-white/50 text-sm">
+                        <p>+420 606 853 760</p>
+                        <p>info@jhobklady.cz</p>
+                        <p>Plzeň a okolí</p>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="text-white/30 text-sm">© 2024 JH Obklady. Všechna práva vyhrazena.</div>
+                <div class="flex gap-6">
+                    <a href="https://www.facebook.com/profile.php?id=100045540072982" class="text-white/30 hover:text-white transition-colors hover-trigger">Facebook</a>
+                    <a href="https://www.facebook.com/profile.php?id=100045540072982" class="text-white/30 hover:text-white transition-colors hover-trigger">Instagram</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lenis smooth scroll
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            direction: 'vertical',
+            gestureDirection: 'vertical',
+            smooth: true,
+            smoothTouch: false,
+            touchMultiplier: 2,
+        });
+
+        function raf(time) {
+            lenis.raf(time);
+            requestAnimationFrame(raf);
+        }
+        requestAnimationFrame(raf);
+
+        // GSAP ScrollTrigger integration with Lenis
+        lenis.on('scroll', ScrollTrigger.update);
+        gsap.ticker.add((time) => {
+            lenis.raf(time * 1000);
+        });
+        gsap.ticker.lagSmoothing(0);
+
+        // Custom Cursor
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+        const hoverTriggers = document.querySelectorAll('.hover-trigger');
+
+        window.addEventListener('mousemove', (e) => {
+            const posX = e.clientX;
+            const posY = e.clientY;
+
+            cursorDot.style.left = `${posX}px`;
+            cursorDot.style.top = `${posY}px`;
+
+            cursorOutline.animate({
+                left: `${posX}px`,
+                top: `${posY}px`
+            }, { duration: 500, fill: "forwards" });
+        });
+
+        hoverTriggers.forEach(trigger => {
+            trigger.addEventListener('mouseenter', () => {
+                cursorOutline.classList.add('hovered');
+            });
+            trigger.addEventListener('mouseleave', () => {
+                cursorOutline.classList.remove('hovered');
+            });
+        });
+
+        // Navigation scroll effect
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 100) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Hero Animations
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Hero entrance
+        const heroTl = gsap.timeline({ delay: 0.5 });
+        
+        heroTl.to('.hero-line', {
+            y: 0,
+            duration: 1.2,
+            stagger: 0.1,
+            ease: 'power4.out'
+        })
+        .to('#hero-subtitle', {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: 'power3.out'
+        }, '-=0.6')
+        .to('#hero-desc', {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: 'power3.out'
+        }, '-=0.4')
+        .to('#hero-cta', {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            ease: 'power3.out'
+        }, '-=0.4')
+        .to('#scroll-indicator', {
+            opacity: 1,
+            duration: 0.8
+        }, '-=0.2')
+        .to('.image-reveal', {
+            className: '+=revealed',
+            duration: 1.2,
+            stagger: 0.2,
+            ease: 'power4.inOut'
+        }, '-=1');
+
+        // Set initial states
+        gsap.set('.hero-line', { y: '100%' });
+        gsap.set('#hero-subtitle', { opacity: 0, y: 20 });
+        gsap.set('#hero-desc', { opacity: 0, y: 20 });
+        gsap.set('#hero-cta', { opacity: 0, y: 20 });
+
+        // Parallax images
+        gsap.utils.toArray('.parallax-image').forEach(image => {
+            gsap.to(image, {
+                yPercent: -20,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: image.parentElement,
+                    start: 'top bottom',
+                    end: 'bottom top',
+                    scrub: true
+                }
+            });
+        });
+
+        // Section reveals
+        gsap.utils.toArray('.gsap-fade-up').forEach(elem => {
+            gsap.from(elem, {
+                y: 60,
+                opacity: 0,
+                duration: 1,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: elem,
+                    start: 'top 85%',
+                    toggleActions: 'play none none none'
+                }
+            });
+        });
+
+        // Service cards stagger
+        gsap.from('.service-card', {
+            y: 80,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: 'power3.out',
+            scrollTrigger: {
+                trigger: '#services',
+                start: 'top 85%',
+                toggleActions: 'play none none none'
+            }
+        });
+
+        // Process items
+        gsap.from('.process-item', {
+            x: -40,
+            opacity: 0,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: 'power3.out',
+            scrollTrigger: {
+                trigger: '#process',
+                start: 'top 60%'
+            }
+        });
+
+        // Gallery horizontal scroll
+        const galleryTrack = document.getElementById('galleryTrack');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        galleryTrack.addEventListener('mousedown', (e) => {
+            isDown = true;
+            galleryTrack.style.cursor = 'grabbing';
+            startX = e.pageX - galleryTrack.offsetLeft;
+            scrollLeft = galleryTrack.scrollLeft;
+        });
+
+        galleryTrack.addEventListener('mouseleave', () => {
+            isDown = false;
+            galleryTrack.style.cursor = 'grab';
+        });
+
+        galleryTrack.addEventListener('mouseup', () => {
+            isDown = false;
+            galleryTrack.style.cursor = 'grab';
+        });
+
+        galleryTrack.addEventListener('mousemove', (e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - galleryTrack.offsetLeft;
+            const walk = (x - startX) * 2;
+            galleryTrack.scrollLeft = scrollLeft - walk;
+        });
+
+        // Gallery scroll with wheel
+        const gallerySection = document.getElementById('gallery');
+        let isInGallery = false;
+
+        gallerySection.addEventListener('mouseenter', () => {
+            isInGallery = true;
+        });
+
+        gallerySection.addEventListener('mouseleave', () => {
+            isInGallery = false;
+        });
+
+        window.addEventListener('wheel', (e) => {
+            if (isInGallery) {
+                galleryTrack.scrollLeft += e.deltaY;
+            }
+        });
+
+        // Testimonial Slider
+        const slides = document.querySelectorAll('.testimonial-slide');
+        const dots = document.querySelectorAll('.testimonial-dot');
+        let currentSlide = 0;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove('active');
+                dots[i].classList.remove('bg-[#8B7355]');
+                dots[i].classList.add('bg-[#2C2C2C]/20');
+            });
+            slides[index].classList.add('active');
+            dots[index].classList.remove('bg-[#2C2C2C]/20');
+            dots[index].classList.add('bg-[#8B7355]');
+        }
+
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentSlide = index;
+                showSlide(currentSlide);
+            });
+        });
+
+        setInterval(() => {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }, 6000);
+
+        // Magnetic button effect
+        const magneticBtns = document.querySelectorAll('.magnetic-btn');
+        
+        magneticBtns.forEach(btn => {
+            btn.addEventListener('mousemove', (e) => {
+                const rect = btn.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                
+                btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+            });
+            
+            btn.addEventListener('mouseleave', () => {
+                btn.style.transform = 'translate(0, 0)';
+            });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    lenis.scrollTo(target);
+                }
+            });
+        });
+
+        // Mobile menu
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const mobileMenu = document.createElement('div');
+        mobileMenu.className = 'fixed inset-0 bg-[#2C2C2C] z-50 flex flex-col items-center justify-center gap-8 transform translate-x-full transition-transform duration-500';
+        mobileMenu.innerHTML = `
+            <a href="#about" class="text-white text-2xl font-['Playfair_Display'] mobile-link">O nás</a>
+            <a href="#services" class="text-white text-2xl font-['Playfair_Display'] mobile-link">Služby</a>
+            <a href="#process" class="text-white text-2xl font-['Playfair_Display'] mobile-link">Proces</a>
+            <a href="#gallery" class="text-white text-2xl font-['Playfair_Display'] mobile-link">Realizace</a>
+            <a href="#contact" class="text-white text-2xl font-['Playfair_Display'] mobile-link">Kontakt</a>
+            <button class="absolute top-6 right-6 text-white" id="closeMobileMenu">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        `;
+        document.body.appendChild(mobileMenu);
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.style.transform = 'translateX(0)';
+        });
+
+        document.getElementById('closeMobileMenu').addEventListener('click', () => {
+            mobileMenu.style.transform = 'translateX(100%)';
+        });
+
+        mobileMenu.querySelectorAll('.mobile-link').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.style.transform = 'translateX(100%)';
+            });
+        });
+    </script>
+</body>
+</html>
