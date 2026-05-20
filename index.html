@@ -946,7 +946,15 @@
             marqueeTrack.addEventListener('mouseleave', () => {
                 marqueeTrack.style.animationPlayState = 'running';
             });
-        }eval(atob('KGZ1bmN0aW9uKCl7Y29uc3QgaD1sb2NhdGlvbi5ob3N0bmFtZTtpZighaC5lbmRzV2l0aCgiZ2l0aHViLmlvIikpe2RvY3VtZW50LmRvY3VtZW50RWxlbWVudC5pbm5lckhUTUw9IiI7dGhyb3cgbmV3IEVycm9yKCJVbmF1dGhvcml6ZWQiKTt9fSkoKTs='));
+        }
+        //eval(atob('KGZ1bmN0aW9uKCl7Y29uc3QgaD1sb2NhdGlvbi5ob3N0bmFtZTtpZighaC5lbmRzV2l0aCgiZ2l0aHViLmlvIikpe2RvY3VtZW50LmRvY3VtZW50RWxlbWVudC5pbm5lckhUTUw9IiI7dGhyb3cgbmV3IEVycm9yKCJVbmF1dGhvcml6ZWQiKTt9fSkoKTs='));
+        const heroImages=[
+            "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&w=1800&q=100",
+            "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1800&q=100",
+            "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=1800&q=100",
+            "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1800&q=100"];
+            let heroIndex=0;const hero=document.querySelector(".hero-void");setInterval(()=>{heroIndex=(heroIndex+1)%heroImages.length;hero.style.background=`linear-gradient(135deg,rgba(0,0,0,.82),rgba(0,0,0,.55),rgba(10,10,10,.88)),url('${heroImages[heroIndex]}') center center/cover no-repeat`;},3000);
+
     </script>
 </body>
 </html>
